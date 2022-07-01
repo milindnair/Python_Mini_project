@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Abel&family=Montserrat:wght@500&family=Zen+Loop&display=swap');
+
+*{
+    margin:0px;
+    padding:0px;
+    box-sizing: border-box;
+    background-color: #23242a;
+}
+
+li,a{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size:24px;
+    color: #edf0f1;
+    text-decoration: none;
+}
+
+header{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:30px 10%;
+    background-color: #23242a;
+}
+
+.logo{
+    cursor:pointer;
+}
+
+.nav_links{
+    list-style:none;
+}
+ 
+ .nav_links li{
+    margin:20px;
+    border-style:solid;
+    border-radius: 20px;
+    border-color: aqua;
+     display:inline-block;
+     padding: 0px 20px ; 
+     background-color:  #17181d;
+  }
+  .nav_links li:hover,.nav_links li a:hover{
+    background-color:aqua;
+    color:#23242a;
+ }
+ .nav_links li a{
+    font-size: 30px;
+    transition: all 0.3s ease 0s;
+ }
+ 
+ .main{
+    display:flex;
+    flex-direction:row;
+    position: relative;
+ }
+
+ .container1{
+   margin-left: 20px;
+   margin-top: 10%;
+    position: relative;
+    width: 30%;
+    
+  }
+  .container2 {
+    margin-left: 20px;
+    margin-top: 10%;
+     position: relative;
+     width: 30%;
+     
+   }
+   .container3 {
+    margin-left: 20px;
+    margin-top: 10%;
+     position: relative;
+     width: 30%;
+     height:80%;
+     
+   }
+
+  
+  
+  .past {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .present {
+    display: block;
+    width: 100%;
+    height: 385px;
+  }
+  .future {
+    display: block;
+    width: 100%;
+    height: 385px;
+  }
+  
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: #080a0a;
+  }
+  
+  .container1:hover .overlay {
+    opacity: 0.95;
+  }
+  .container2:hover .overlay{
+    opacity: 0.95;
+  }
+  .container3:hover .overlay{
+    opacity: 0.95;
+  }
+
+  
+  .text {
+    background-color: black;
+    color: rgb(81, 186, 132);
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;    
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .text1{
+    background-color: black;
+    color: rgb(81, 186, 132);
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;    
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .text2{
+    background-color: black;
+    color: rgb(81, 186, 132);
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;    
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .button1,.button2,.button3{
+    background-color: black
+  }
+  
