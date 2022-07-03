@@ -1,0 +1,320 @@
+# importing necessary libraries
+import pywebio.output as pout
+import pywebio.input as pimp
+import csv
+
+class Event:  # Event class
+
+    def __init__(default, name, date, info):  # constructor
+        default.name = name
+        default.date = date
+        default.info = info
+
+    ''' # setter methods
+    def setDate(default, date):
+        default.date = date'''
+
+    def setInfo(default, info):  # short one line info
+        default.info = info
+
+    # getter methods
+    def getName(default):
+        return default.name
+
+    def getDate(default):
+        return default.date
+
+    def getInfo(default):  # short one line info
+        return default.info
+
+    def printDetails(default):  # print details of the event
+        print(default.getName())
+        print(default.getDate())
+        print(default.getInfo())
+
+
+Eventlist = []  # GLOBAL VARIABLE
+def readEventlist():
+    with open('LMS-for-Events-main\events.csv', 'r') as csvfile:
+        for i in csvfile:
+            
+            i = i.split(",")
+            if(len(i)==3):
+                Eventlist.append(Event(name=i[0], date=i[1], info=str(i[2])))
+        csvfile.close()
+
+
+def saveEventlist():
+    '''
+    Erases file as this is a very short list and not a huge database file.
+    :return: none
+    '''
+    with open('LMS-for-Events-main\events.csv', 'a') as csvfile:
+        csvfile.truncate(0)
+        writer = csv.writer(csvfile)
+        for i in Eventlist:
+            writer.writerow([i.getName(), i.getDate(), i.getInfo()])
+        csvfile.close()
+
+
+
+def addEvent(name, date, info):  # add event to list
+    '''
+
+    :param name: name of event
+    :param date: date of event
+    :param info: info about event
+    :return: none
+    '''
+
+    Eventlist.append(Event(name=name, date=date, info=info))
+    saveEventlist()  # save to database
+
+
+def deleteEvent(name):  # delete event from list
+    '''
+
+    :param name: name of event
+    :return: none
+    '''
+    '''
+    Here it is assumed that if the event is present in the list then it is deleted else pass silently
+    '''
+    for i in Eventlist:
+        if i.getName() == name:
+            Eventlist.remove(i)
+    saveEventlist()  # save to database
+
+
+def editEvent(name, date, info):  # edit event info (Never used)
+    '''
+
+    :param name: name of event
+    :param date: date of event
+    :param info: info of event
+    :return: none
+    '''
+    '''
+    Editing will be carried out as deleting the event and adding a new one
+    '''
+   # Editing the event.
+    for i in Eventlist:
+        if i.getName() == name:
+            i.setDate(date)
+            i.setInfo(info)
+    saveEventlist()  # save to database
+
+
+def printEvents():  # print events Debug function
+    '''
+    :return: none
+    '''
+    print()
+    for i in Eventlist:
+        i.printDetails()
+        print("----------------------------------------------------")
+
+
+def displayEvents():
+    pout.remove("scopeV")
+    # display events from list in scope1
+    '''
+
+    :return: None
+    '''
+    displaylist = [['Name of the event', 'Date of the event',
+                    'Information']]  # lot to feed in put_table function contains a list of list.
+    for i in Eventlist:
+        displaylist.append([i.getName(), i.getDate(), i.getInfo()])
+    pout.clear("scope1")  # clear prev display
+    with pout.use_scope('scope1'):
+        pout.put_table(displaylist)
+        pout.put_button("Back", onclick=Continue)
+    
+    
+
+
+def notBlank(data):
+    # check if event parameters are blank else returns False
+    '''
+
+    :param data: input data from pywebio
+    :return: error message or False
+    '''
+    if (data['name'] == ""):
+        return ('name', 'Name cannot be blank!')
+    if (data['date'] == ""):
+        return ('date', 'Date cannot be blank!')
+    if (data['info'] == ""):
+        return ('info', 'Info cannot be blank!')
+    return False
+
+
+def addEventWeb():
+    pout.remove("scopeV")
+    # add event from pywebio to list
+    '''
+
+    :return: none
+    '''
+    data = pimp.input_group("Add Event", [
+        pimp.input('Enter Event Name',placeholder='Pls Enter Event Name', name='name' ,required=True),
+        pimp.input('Enter Date of Event',
+                name='date', type=pimp.DATE,required=True),
+        pimp.input('Enter info about the event', name='info',required=True,placeholder='Pls Enter Event Details')],
+        validate=AddEventValidate,cancelable=True
+        # check if event exists or is blank to show error. error is handled by pywebio
+    )
+    if(data==None):
+        Continue()
+    else:
+        addEvent(name=data['name'], date=data['date'], info=data['info'])
+
+
+def AddEventValidate(data):
+    # check if event exists or is blank to show error. error is handled by pywebio
+    '''
+
+    :param data: input data from pywebio
+    :return: Tuple of (name, error)
+    if the parameters are blank then it returns error for the parameter which is blank.
+    Then it checks if the event exists or not and returns the error accordingly.
+    '''
+    if (notBlank(data) != False):  # if not blank return error message
+        return notBlank(data)  # must return a tuple of (name, error)
+    if (exists(data) == True):  # if already present then return error message
+        return ('name', 'Event already exists!')
+
+
+def DeleteEventValidate(data):
+    # check if event exists or is blank to show error. error is handled by pywebio
+    '''
+
+    :param data: input data from pywebio
+    :return: Tuple of (name, error)
+    if the name is blank then it returns error
+    Then it checks if the event exists or not and returns the error accordingly.
+    '''
+    if (data['name'] == ""):
+        return ('name', 'Name cannot be blank!')
+    if (exists(data) == False):  # if not present then return error message
+        return ('name', 'Event doesnt exists!')
+
+
+def exists(data):
+    # check if event exists
+    '''
+
+    :param data: input data from pywebio
+    :return: True if name already in Eventlist and false if name not found in Eventlist
+    '''
+    exists = False
+    for i in Eventlist:
+        if (i.getName() == data['name']):
+            exists = True
+
+    return exists
+
+
+def deleteEventWeb():
+    pout.remove("scopeV")
+    '''
+
+    :return: None
+
+    Deleted events from the web using the name parameter.
+    '''
+    
+    data = pimp.input_group("Delete Event", [
+        pimp.input('Enter name of the event you want to delete', name='name')],
+        validate=DeleteEventValidate,cancelable=True
+        # check if event exists or is blank to show error. error is handled by pywebio
+    )
+    if(data==None):
+        Continue()
+    else:
+        deleteEvent(name=data['name'])
+def Login_func():
+
+    pout.remove('scopeLogReg')
+
+    
+    data2 = pimp.input_group("Login", [
+            pimp.input('Enter Username', name='username',required=True),
+            pimp.input('Enter Password',
+                    name='password', type=pimp.PASSWORD,required=True)
+            ],
+            validate=check,
+            cancelable=True
+        
+            )
+    if((data2)==None):
+        restart()
+    else:
+        Continue()
+    
+def Register():
+    pout.remove('scopeLogReg')
+    
+    
+    data3 = pimp.input_group("Register", [
+            pimp.input('Enter Username', name='username',required=True),
+            pimp.input('Enter Password',
+                        name='password', type=pimp.PASSWORD,required=True),
+            pimp.input('Enter Verif Code',
+                        name='code',required=True),
+            ],
+            validate=is_valid,
+            cancelable=True
+            
+            )
+    if((data3)==None):
+        restart()
+    else:
+        Continue()
+
+def is_valid(data3):
+    if(len(data3['username'].split("."))==3):
+        if((data3['username'].split("@"))[1]=="somaiya.edu"):
+            pass
+        else:
+            return('username',"Invalid Username")
+    else:
+            return('username',"Invalid Username")
+    if(len(data3['password'])>=10):
+        if((data3['password']).count("@")>=1):
+            pass
+        else:
+            return('password',"Password must have at least one \"@\" symbol ")
+    else:
+        return('password',"Password must be at least 10 characters")
+    if(data3['code']=="1@3$5^7*9)"):
+        pass
+    else:
+        return('code',"Invalid Code")
+    
+def check(data2):
+    b=2
+def restart():
+    pout.remove('scopeLogReg')
+    pout.remove('scopeLogReg2')
+    with pout.use_scope('scopeLogReg'):
+        pout.put_button("Login", onclick=Login_func)  # a group of buttons
+        pout.put_button("Register", onclick=Register)  # a group of buttons
+
+def Continue():
+    pout.remove('scope1')
+    with pout.use_scope('scopeV'):
+        pout.put_button("Add Event", onclick=addEventWeb)  # a group of buttons
+        pout.put_button("Delete Event", onclick=deleteEventWeb)  # a group of buttons
+        pout.put_button("Display Events", onclick=displayEvents)  # a group of buttons
+
+
+readEventlist()  # Get initial list of events
+with pout.use_scope('scopeLogReg'):
+    pout.put_button("Login", onclick=Login_func)  # a group of buttons
+    pout.put_button("Register", onclick=Register)  # a group of buttons
+"""with pout.use_scope('scopeV',clear=True):
+    pout.put_button("Add Event", onclick=addEventWeb)  # a group of buttons
+    pout.put_button("Delete Event", onclick=deleteEventWeb)  # a group of buttons
+    pout.put_button("Display Events", onclick=displayEvents)  # a group of buttons"""
